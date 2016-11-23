@@ -59,26 +59,111 @@ var Scrabble = function() {
   };
 };
 
+var Player = function(name) {
+  this.name = name;
+  this.game = new Scrabble();
+};
+
+// plays: property which returns an Array of the words played by the player
+Player.prototype.plays = [];
+
+// play(word): Function which adds the input word to the plays Array. Returns false if player has already won
+Player.prototype.play = function(word) {
+  if (this.hasWon === true) {
+    return false;
+  }
+  var userInput = word.toUpperCase();
+  this.plays.push(userInput);
+  return true;
+};
+
+// totalScore(): Function which sums up and returns the score of the players words
+Player.prototype.totalScore = function() {
+  var total = 0;
+  var len = this.plays.length;
+  for (var i = 0 ; i < len; i++) {
+    var wordScore = this.game.score(this.plays[i]);
+    total += wordScore;
+  }
+  return total;
+};
+
+// hasWon(): Function which returns true if the player has over 100 points, otherwise returns false
+Player.prototype.hasWon = function() {
+  if (this.totalScore() > 100) {
+    return true;
+  } else {
+    return false;
+  }
+};
+
+// highestScoringWord(): Function which returns the highest scoring word the user has played
+Player.prototype.highestScoringWord = function() {
+  if (this.plays.length === 0) {
+    console.log("This player hasn't played yet.");
+    return null;
+  }
+  return this.game.highestScoreFrom(this.plays);
+};
+
+// highestWordScore(): Function which returns the highestScoringWord score
+Player.prototype.highestWordScore = function() {
+  if (this.highestScoringWord() === null) {
+    console.log("You don't have a score yet!");
+    return null;
+  } else {
+    return this.game.score(this.highestScoringWord());
+  }
+};
 
 module.exports = Scrabble;
 
+// SCRABBLE TESTS:
 // testing score(word) function
 var sampleScore = new Scrabble();
 console.log(sampleScore.score("lioness")); // 57
-console.log("=====");
+// console.log("=====");
+
 // testing the highestScoreFrom(arrayOfWords) function
 var highest1 = sampleScore.highestScoreFrom(['CAT', 'COW', 'LIONESS']);
 console.log(highest1); // 'LIONESS'
-console.log("=====");
+// console.log("=====");
 
 var highest2 = sampleScore.highestScoreFrom(['CAT', 'QQQQQJ', 'AAAAAAG']);
 console.log(highest2); // 'AAAAAAG'
-console.log("=====");
+// console.log("=====");
 
 var highest3 = sampleScore.highestScoreFrom(['CAT', 'QQQQJ', 'QQQQBK']);
 console.log(highest3); // 'QQQQJ'
-console.log("=====");
+// console.log("=====");
 
 var highest4 = sampleScore.highestScoreFrom(['CAT', 'QQQQJ', 'QQQQX']);
 console.log(highest4); // 'QQQQJ'
-console.log("=====");
+// console.log("=====");
+
+// PLAYER TESTS:
+// testing play(word)
+var kelly = new Player('Kelly');
+var kellyPlay1 = kelly.play('happy');
+var kellyPlay2 = kelly.play('sad');
+var kellyPlay3 = kelly.play('cheerful');
+
+// testing plays
+var kellyPlays = kelly.plays;
+console.log(kellyPlays); // array ['happy', 'sad']
+
+// testing totalScore()
+var kellyTotal = kelly.totalScore();
+console.log(kellyTotal);
+
+// testing hasWon()
+var kellyWon = kelly.hasWon();
+console.log(kellyWon);
+
+//testing highestScoringWord()
+var kellyHighestWord = kelly.highestScoringWord();
+console.log(kellyHighestWord);
+
+// testing highestWordScore()
+var kellyHighestScore = kelly.highestWordScore();
+console.log(kellyHighestScore);
